@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const requestBodyparser = require('../util/body-parser');
+const writeToFile = require('../util/write-to-file');
 module.exports = async (req, res) => {
     if (req.url === 'api/movies') {
         try {
@@ -7,6 +8,7 @@ module.exports = async (req, res) => {
             console.log('Request Body: ', body);
             body.id = crypto.randomUUID();
             req.movies.push(body);
+            writeToFile(req.movies);
             res.writeHead(201, { 'Content-Type': 'application/json' });
             res.end();
         } catch (err) {
@@ -19,5 +21,8 @@ module.exports = async (req, res) => {
                 })
             );
         }
+    } else {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ title: 'Not Found', message: 'Route not found' }));
     }
 };
